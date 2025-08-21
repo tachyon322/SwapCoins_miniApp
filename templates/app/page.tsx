@@ -46,16 +46,17 @@ export default function Home() {
         const sendPrice = cryptoPrices[sendCurrencyData.short];
         const receivePrice = cryptoPrices[receiveCurrencyData.short];
 
-        if (sendPrice && receivePrice) {
+        if (sendPrice && receivePrice && sendPrice > 0 && receivePrice > 0) {
           const amountNum = parseFloat(amount);
           const convertedAmount = (amountNum * sendPrice) / receivePrice;
           setCalculatedAmount(convertedAmount.toFixed(6));
         } else {
-          setCalculatedAmount("");
+          // Fallback calculation if prices aren't available
+          setCalculatedAmount("0.000000");
         }
       }
     } else {
-      setCalculatedAmount("");
+      setCalculatedAmount("0.000000");
     }
   }, [amount, sendCurrency, receiveCurrency, cryptoPrices]);
 

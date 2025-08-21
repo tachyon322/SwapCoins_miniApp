@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Recieve from '@/components/swapPage/Receive';
+import Footer from '@/components/Footer';
 
 function generateRandomOrderId(length: number = 8): string {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -29,39 +30,36 @@ export default function page() {
   }, []);
 
   return (
-    <div className="wide-wrap">
-      <Header />
+    <div className="flex flex-col gap-5">
+      <div className="wide-wrap">
+        <Header />
 
-      <div className="space-y-3 mt-3">
-        <div className="">
-          <h1 className='text-3xl text-center mb-7 font-bold'>Order - {orderId}</h1>
-          <AwaitingCard currency={currency} amount={amount} wallet={wallet} />
-        </div>
+        <div className="space-y-3 mt-3">
+          <div className="">
+            <h1 className='text-3xl text-center mb-7 font-bold'>Order - {orderId}</h1>
+            <AwaitingCard currency={currency} amount={amount} wallet={wallet} />
+          </div>
 
-        <div className="text-center text-sm">
-          <p>The application is executed only as soon as the funds <br />
-            are received according to the issued details</p>
-        </div>
+          <div className="text-center text-sm">
+            <p>The application is executed only as soon as the funds <br />
+              are received according to the issued details</p>
+          </div>
 
-        <Button className='w-full !h-16 bg-blue-500 hover:bg-blue-600 shadow-none'>
-          <h1 className='text-lg'>Paid</h1>
-        </Button>
-
-        <Link href={"/"} className=''>
-          <Button className='w-full !h-14 bg-blue-100 text-blue-500 hover:bg-white shadow-none'>
-            <h1 className='text-lg'>Cancel</h1>
+          <Button className='w-full !h-16 bg-blue-500 hover:bg-blue-600 shadow-none'>
+            <h1 className='text-lg'>Paid</h1>
           </Button>
-        </Link>
 
-        <Recieve />
-      </div>
+          <Link href={"/"} className=''>
+            <Button className='w-full !h-14 bg-blue-100 text-blue-500 hover:bg-white shadow-none'>
+              <h1 className='text-lg'>Cancel</h1>
+            </Button>
+          </Link>
 
-      {wallet && (
-        <div className="mt-4 p-3 bg-white rounded-[10px]">
-          <p className="text-sm text-gray-600">Your wallet:</p>
-          <p className="font-semibold text-xs break-all">{wallet}</p>
+          <Recieve amount={amount} />
         </div>
-      )}
+
+      </div>
+      <Footer />
     </div>
   )
 }
