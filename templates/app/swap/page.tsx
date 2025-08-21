@@ -1,0 +1,67 @@
+"use client"
+
+import React, { useState, useEffect } from 'react'
+import Header from '@/components/Header'
+import AwaitingCard from '@/components/swapPage/AwaitingCard';
+import { useSearchParams } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import Recieve from '@/components/swapPage/Receive';
+
+function generateRandomOrderId(length: number = 8): string {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
+
+export default function page() {
+  const searchParams = useSearchParams();
+  const currency = searchParams.get('currency') || 'Bitcoin';
+  const amount = searchParams.get('amount') || '';
+  const wallet = searchParams.get('wallet') || '';
+  const [orderId, setOrderId] = useState<string>('');
+
+  useEffect(() => {
+    setOrderId(generateRandomOrderId());
+  }, []);
+
+  return (
+    <div className="wide-wrap">
+      <Header />
+
+      <div className="space-y-3 mt-3">
+        <div className="">
+          <h1 className='text-3xl text-center mb-7 font-bold'>Order - {orderId}</h1>
+          <AwaitingCard currency={currency} amount={amount} wallet={wallet} />
+        </div>
+
+        <div className="text-center text-sm">
+          <p>The application is executed only as soon as the funds <br />
+            are received according to the issued details</p>
+        </div>
+
+        <Button className='w-full !h-16 bg-blue-500 hover:bg-blue-600 shadow-none'>
+          <h1 className='text-lg'>Paid</h1>
+        </Button>
+
+        <Link href={"/"} className=''>
+          <Button className='w-full !h-14 bg-blue-100 text-blue-500 hover:bg-white shadow-none'>
+            <h1 className='text-lg'>Cancel</h1>
+          </Button>
+        </Link>
+
+        <Recieve />
+      </div>
+
+      {wallet && (
+        <div className="mt-4 p-3 bg-white rounded-[10px]">
+          <p className="text-sm text-gray-600">Your wallet:</p>
+          <p className="font-semibold text-xs break-all">{wallet}</p>
+        </div>
+      )}
+    </div>
+  )
+}
