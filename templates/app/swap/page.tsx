@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import Header from '@/components/Header'
 import AwaitingCard from '@/components/swapPage/AwaitingCard';
+import CheckingCard from '@/components/swapPage/CheckingCard';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -23,7 +24,10 @@ export default function page() {
   const currency = searchParams.get('currency') || 'Bitcoin';
   const amount = searchParams.get('amount') || '';
   const wallet = searchParams.get('wallet') || '';
+  const receiveCurrency = searchParams.get('receiveCurrency') || 'Tether';
+  const receiveAmount = searchParams.get('receiveAmount') || '';
   const [orderId, setOrderId] = useState<string>('');
+  const [isChecking, setIsChecking] = useState<boolean>(false);
 
   useEffect(() => {
     setOrderId(generateRandomOrderId());
@@ -37,7 +41,11 @@ export default function page() {
         <div className="space-y-3 mt-3">
           <div className="">
             <h1 className='text-3xl text-center mb-7 font-bold'>Order - {orderId}</h1>
-            <AwaitingCard currency={currency} amount={amount} wallet={wallet} />
+            {isChecking ? (
+              <CheckingCard />
+            ) : (
+              <AwaitingCard currency={currency} amount={amount} wallet={wallet} />
+            )}
           </div>
 
           <div className="text-center text-sm">
@@ -45,8 +53,12 @@ export default function page() {
               are received according to the issued details</p>
           </div>
 
-          <Button className='w-full !h-16 bg-blue-500 hover:bg-blue-600 shadow-none'>
-            <h1 className='text-lg'>Paid</h1>
+          <Button
+            className='w-full !h-16 bg-blue-500 hover:bg-blue-600 shadow-none'
+            onClick={() => setIsChecking(true)}
+            disabled={isChecking}
+          >
+            <h1 className='text-lg'>{isChecking ? 'Checking...' : 'Paid'}</h1>
           </Button>
 
           <Link href={"/"} className=''>
@@ -55,7 +67,7 @@ export default function page() {
             </Button>
           </Link>
 
-          <Recieve amount={amount} />
+          <Recieve amount={receiveAmount} />
         </div>
 
       </div>

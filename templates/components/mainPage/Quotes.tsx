@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react'
 import { CurrenciesList } from '@/data/CurrenciesList'
 import Image from 'next/image'
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts'
 
 interface CryptoPrices {
     [key: string]: number;
@@ -14,6 +16,28 @@ export default function Quotes() {
     const [error, setError] = useState<string | null>(null)
 
     const newList = CurrenciesList.slice(0, 6)
+
+    // Generate mock historical data for charts
+    const generateMockData = (currentPrice: number, symbol: string) => {
+        const data = []
+        const basePrice = currentPrice || 1000 // fallback price
+        
+        for (let i = 23; i >= 0; i--) {
+            // Create more dramatic price variations (±15% with some trending)
+            const timeProgress = (23 - i) / 23
+            const trendFactor = Math.sin(timeProgress * Math.PI * 2) * 0.1
+            const randomFactor = (Math.random() - 0.5) * 0.3
+            const variation = trendFactor + randomFactor
+            
+            const price = basePrice * (1 + variation)
+            data.push({
+                time: `${i}h`,
+                price: Math.max(basePrice * 0.7, price), // ensure minimum price
+                symbol
+            })
+        }
+        return data
+    }
 
     useEffect(() => {
         const fetchPrices = async () => {
@@ -83,9 +107,83 @@ export default function Quotes() {
                             </p>
                         </div>
                     </div>
-                    <div className="w-36 h-full bg-amber-100">Graph</div>
+                    <div className="w-36 h-full">
+                        <MiniChart
+                            data={generateMockData(prices[item.short], item.short)}
+                            symbol={item.short}
+                            currentPrice={prices[item.short]}
+                        />
+                    </div>
                 </div>
             ))}
         </div>
+    )
+}
+
+interface MiniChartProps {
+    data: Array<{ time: string; price: number; symbol: string }>
+    symbol: string
+    currentPrice?: number
+}
+
+function MiniChart({ data, symbol, currentPrice }: MiniChartProps) {
+    if (!data.length || !currentPrice) {
+        return (
+            <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded">
+                <span className="text-xs text-gray-400">No data</span>
+            </div>
+        )
+    }
+
+    // Determine if price is trending up or down
+    const firstPrice = data[0]?.price || 0
+    const lastPrice = data[data.length - 1]?.price || 0
+    const isPositive = lastPrice >= firstPrice
+
+    const chartConfig = {
+        price: {
+            label: "Price",
+            color: isPositive ? "#10b981" : "#ef4444", // green for up, red for down
+        },
+    }
+
+    // Calculate price range for proper scaling
+    const prices = data.map(d => d.price)
+    const minPrice = Math.min(...prices)
+    const maxPrice = Math.max(...prices)
+    const padding = (maxPrice - minPrice) * 0.1 // 10% padding
+
+    return (
+        <ChartContainer config={chartConfig} className="h-full w-full">
+            <LineChart
+                data={data}
+                margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+            >
+                <YAxis
+                    hide
+                    domain={[minPrice - padding, maxPrice + padding]}
+                />
+                <XAxis hide />
+                <Line
+                    type="monotone"
+                    dataKey="price"
+                    stroke={`var(--color-price)`}
+                    strokeWidth={2}
+                    dot={false}
+                    activeDot={{ r: 3, stroke: `var(--color-price)`, strokeWidth: 2 }}
+                />
+                <ChartTooltip
+                    content={
+                        <ChartTooltipContent
+                            formatter={(value) => [
+                                `$${Number(value).toFixed(4)}`,
+                                symbol.toUpperCase()
+                            ]}
+                            labelFormatter={(label) => `${label} ago`}
+                        />
+                    }
+                />
+            </LineChart>
+        </ChartContainer>
     )
 }

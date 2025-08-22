@@ -23,6 +23,18 @@ export default function AwaitingCard({ currency, amount, wallet }: AwaitingCardP
     // Timer state
     const [timeLeft, setTimeLeft] = useState(1200); // 10 minutes in seconds
     const [isExpired, setIsExpired] = useState(false);
+    const [copied, setCopied] = useState(false);
+
+    // Copy to clipboard function
+    const copyToClipboard = async (text: string) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
+        } catch (err) {
+            console.error('Failed to copy text: ', err);
+        }
+    };
 
     useEffect(() => {
         if (timeLeft <= 0) {
@@ -62,17 +74,31 @@ export default function AwaitingCard({ currency, amount, wallet }: AwaitingCardP
         <div className='bg-[#eaf4fd] p-4 rounded-[15px]'>
             <div className="flex justify-between space-y-2">
                 <h1 className='text-gray-400'>Send {amount} {currencyData?.short || currency}</h1>
-                <Image
-                    src="/copy-svgrepo-com.svg"
-                    alt="Copy icon"
-                    width={24}
-                    height={24}
-                />
+                <div
+                    className="cursor-pointer hover:opacity-70 transition-opacity"
+                    onClick={() => copyToClipboard(walletAddress)}
+                    title={copied ? "Copied!" : "Copy wallet address"}
+                >
+                    <Image
+                        src="/copy-svgrepo-com.svg"
+                        alt="Copy icon"
+                        width={24}
+                        height={24}
+                    />
+                </div>
             </div>
             <Input
                 value={walletAddress}
-                className='!h-14 bg-white shadow-none border-none'
-                readOnly />
+                className='!h-14 bg-white shadow-none border-none cursor-pointer hover:bg-gray-50 transition-colors'
+                readOnly
+                onClick={() => copyToClipboard(walletAddress)}
+                title={copied ? "Copied!" : "Click to copy wallet address"}
+            />
+            {copied && (
+                <div className="text-green-600 text-sm mt-1">
+                    Copied to clipboard!
+                </div>
+            )}
 
             <div className="flex flex-col mt-3">
                 <div className="flex justify-between items-center">
