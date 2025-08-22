@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { CurrenciesList } from '@/data/CurrenciesList'
 import Image from 'next/image'
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
@@ -17,27 +17,36 @@ export default function Quotes() {
 
     const newList = CurrenciesList.slice(0, 6)
 
-    // Generate mock historical data for charts
-    const generateMockData = (currentPrice: number, symbol: string) => {
-        const data = []
-        const basePrice = currentPrice || 1000 // fallback price
-        
-        for (let i = 23; i >= 0; i--) {
-            // Create more dramatic price variations (±15% with some trending)
-            const timeProgress = (23 - i) / 23
-            const trendFactor = Math.sin(timeProgress * Math.PI * 2) * 0.1
-            const randomFactor = (Math.random() - 0.5) * 0.3
-            const variation = trendFactor + randomFactor
+    // Generate mock historical data for charts - memoized to prevent regeneration on every render
+    const generateMockData = useMemo(() => {
+        return (currentPrice: number, symbol: string) => {
+            const data = []
+            const basePrice = currentPrice || 1000 // fallback price
             
-            const price = basePrice * (1 + variation)
-            data.push({
-                time: `${i}h`,
-                price: Math.max(basePrice * 0.7, price), // ensure minimum price
-                symbol
-            })
+            // Use symbol as seed for consistent random data
+            const seed = symbol.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+            const seededRandom = (index: number) => {
+                const x = Math.sin(seed + index) * 10000
+                return x - Math.floor(x)
+            }
+            
+            for (let i = 23; i >= 0; i--) {
+                // Create more dramatic price variations (±15% with some trending)
+                const timeProgress = (23 - i) / 23
+                const trendFactor = Math.sin(timeProgress * Math.PI * 2) * 0.1
+                const randomFactor = (seededRandom(i) - 0.5) * 0.3
+                const variation = trendFactor + randomFactor
+                
+                const price = basePrice * (1 + variation)
+                data.push({
+                    time: `${i}h`,
+                    price: Math.max(basePrice * 0.7, price), // ensure minimum price
+                    symbol
+                })
+            }
+            return data
         }
-        return data
-    }
+    }, [])
 
     useEffect(() => {
         const fetchPrices = async () => {
