@@ -6,7 +6,7 @@ export default function CheckingCard() {
     return (
         <div className='bg-[#eaf4fd] p-6 rounded-[15px] text-center'>
             <div className="mb-4">
-                <h1 className='text-2xl font-bold text-blue-600 mb-2'>Wait, we're checking it</h1>
+                <h1 className='text-2xl font-bold text-blue-600 mb-2'>Wait, we are checking it</h1>
                 <p className='text-gray-600'>Please wait while we verify your payment...</p>
             </div>
             

@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { CurrenciesList } from '@/data/CurrenciesList'
 import CheckMark from '@/public/check-mark-circle-2-svgrepo-com.svg';
 import TimeIcon from '@/public/time-svgrepo-com.svg';
@@ -70,10 +71,12 @@ export default function LastTransactions() {
                                         ? ' text-blue-400 font-bold '
                                         : '  font-bold'
                                 }`}>
-                                    <img
+                                    <Image
                                         src={transaction.status === 'success' ? CheckMark.src : TimeIcon.src}
                                         alt={transaction.status === 'success' ? "check mark" : "time icon"}
-                                        className="w-4 h-4 mr-1"
+                                        width={16}
+                                        height={16}
+                                        className="mr-1"
                                     />
                                     {transaction.status.toUpperCase()}
                                 </span>
@@ -89,10 +92,12 @@ export default function LastTransactions() {
                                         {transaction.currency.short}
                                     </p>
                                 </div>
-                                <img
+                                <Image
                                     src={transaction.currency.img}
                                     alt={transaction.currency.name}
-                                    className='w-10 h-10 rounded-full'
+                                    width={40}
+                                    height={40}
+                                    className='rounded-full'
                                 />
                             </div>
                         </div>

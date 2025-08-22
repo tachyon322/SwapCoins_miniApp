@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useMemo } from 'react'
+import React from 'react'
 import {
   Select,
   SelectContent,
@@ -36,8 +36,6 @@ export default function Recieve({ receiveCurrency, setReceiveCurrency, calculate
       setWalletTouched(true);
     }
   };
-
-  const selectedCurrency = CurrenciesList.find(currency => currency.name === receiveCurrency);
 
    return (
      <div className='bg-[#eaf4fd] rounded-[15px] mt-4 p-4 space-y-3'>

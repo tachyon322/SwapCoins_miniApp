@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
 import Header from '@/components/Header'
 import AwaitingCard from '@/components/swapPage/AwaitingCard';
 import CheckingCard from '@/components/swapPage/CheckingCard';
@@ -19,12 +19,11 @@ function generateRandomOrderId(length: number = 8): string {
   return result;
 }
 
-export default function page() {
+function SwapContent() {
   const searchParams = useSearchParams();
   const currency = searchParams.get('currency') || 'Bitcoin';
   const amount = searchParams.get('amount') || '';
   const wallet = searchParams.get('wallet') || '';
-  const receiveCurrency = searchParams.get('receiveCurrency') || 'Tether';
   const receiveAmount = searchParams.get('receiveAmount') || '';
   const [orderId, setOrderId] = useState<string>('');
   const [isChecking, setIsChecking] = useState<boolean>(false);
@@ -73,5 +72,13 @@ export default function page() {
       </div>
       <Footer />
     </div>
+  )
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center min-h-screen">Loading...</div>}>
+      <SwapContent />
+    </Suspense>
   )
 }

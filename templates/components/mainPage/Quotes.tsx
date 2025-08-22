@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { CurrenciesList } from '@/data/CurrenciesList'
 import Image from 'next/image'
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts'
+import { LineChart, Line, XAxis, YAxis } from 'recharts'
 
 interface CryptoPrices {
     [key: string]: number;

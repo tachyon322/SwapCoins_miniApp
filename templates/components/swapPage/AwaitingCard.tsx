@@ -13,7 +13,7 @@ interface AwaitingCardProps {
     wallet: string;
 }
 
-export default function AwaitingCard({ currency, amount, wallet }: AwaitingCardProps) {
+export default function AwaitingCard({ currency, amount }: AwaitingCardProps) {
     // Find the currency data
     const currencyData = CurrenciesList.find(c => c.name === currency);
 
